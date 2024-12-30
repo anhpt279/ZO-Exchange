@@ -14,7 +14,7 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-paytone-one)", "var(--font-mulish)", "sans-serif"],
+        sans: ["var(--font-mulish)", "sans-serif"],
       },
       fontSize: {
         xs: ["12px", "18px"],

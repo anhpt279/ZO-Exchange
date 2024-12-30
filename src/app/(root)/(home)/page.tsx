@@ -56,8 +56,6 @@ export default function Home() {
         .toString(16)
         .padStart(64, "0")}`;
 
-      console.log("Bắt đầu gửi giao dịch");
-
       // Kiểm tra kết nối trước khi gửi giao dịch
       if (!sendTransactionAsync) {
         throw new Error(
@@ -84,13 +82,20 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="card w-96">
-        <div className="card-body">
+    <div className="mt-10 flex w-full items-center justify-center gap-10">
+      <div
+        className="card w-96 text-white"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(67, 146, 219, 0.60) 0%, rgba(21, 56, 111, 0.60) 100%)",
+          backdropFilter: "blur(12px)",
+        }}
+      >
+        <div className="card-body font-medium">
           {isConnected && (
             <div>
               <p>
-                <strong>ZO Balance:</strong>{" "}
+                ZO Balance:{" "}
                 {isBalanceLoadingZOBNB
                   ? "Loading..."
                   : balanceDataZOBNB
@@ -99,7 +104,7 @@ export default function Home() {
               </p>
 
               <p>
-                <strong>BNB Balance:</strong>{" "}
+                BNB Balance:{" "}
                 {isBalanceLoadingBNB
                   ? "Loading..."
                   : balanceDataBNB
@@ -108,22 +113,29 @@ export default function Home() {
               </p>
 
               <button
-                className="btn btn-secondary mt-2 w-full"
+                className="btn btn-primary mt-2 w-full font-black"
                 onClick={() => setShowPopup(true)}
               >
-                Send Token
+                Swap Token
               </button>
             </div>
           )}
         </div>
       </div>
 
-      <div className="card w-96">
+      <div
+        className="card w-96 text-white"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(67, 146, 219, 0.60) 0%, rgba(21, 56, 111, 0.60) 100%)",
+          backdropFilter: "blur(12px)",
+        }}
+      >
         <div className="card-body">
           {isConnected && (
             <div>
               <p>
-                <strong>WETH Balance:</strong>{" "}
+                WETH Balance:{" "}
                 {isBalanceLoadingWETH
                   ? "Loading..."
                   : balanceDataWETH
@@ -131,7 +143,7 @@ export default function Home() {
                     : "No balance or invalid token"}
               </p>
               <p>
-                <strong>ZO Balance:</strong>{" "}
+                ZO Balance:{" "}
                 {isBalanceLoadingZOBNB
                   ? "Loading..."
                   : balanceDataZOBNB
@@ -146,7 +158,7 @@ export default function Home() {
       {showPopup && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="text-lg">Send Token</h3>
+            <h3 className="text-2xl font-black">Swap Token</h3>
             <input
               type="text"
               placeholder="Recipient Address"
@@ -155,9 +167,8 @@ export default function Home() {
               className="input mt-2 w-full"
             />
             <p className="mt-4">
-              Are you sure you want to send{" "}
-              <strong>{`${balanceDataZOBNB?.formatted} ${balanceDataZOBNB?.symbol}`}</strong>{" "}
-              to this address?
+              Are you sure you want to swap{" "}
+              {`${balanceDataZOBNB?.formatted} ${balanceDataZOBNB?.symbol}`}?
             </p>
             <div className="modal-action">
               <button
