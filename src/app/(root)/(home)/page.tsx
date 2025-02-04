@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useAccount, useBalance, useSendTransaction } from "wagmi";
-import { parseUnits } from "ethers";
+import { parseEther } from "ethers";
 
 const TOKEN_ADDRESSZO = "0x7ed849c7B60553AF20c6780Dd92484ED49Cc6BDF";
 const WETH_TESTNET_ADDRESS = "0x2a416168cea12820e288d36f77c1b7f936f4e228";
+const ZOARB_TESTNET_ADDRESS = "0xfd9c56f276b24e50f5b877ff55c6c5e8f9cd2111";
 
 export default function Home() {
   const [showPopup, setShowPopup] = useState(false);
@@ -35,6 +36,13 @@ export default function Home() {
     }
   );
 
+  const { data: balanceDataZOARB, isLoading: isBalanceLoadingZOARB } =
+    useBalance({
+      address,
+      token: ZOARB_TESTNET_ADDRESS,
+      chainId: 421614,
+    });
+
   const { sendTransactionAsync } = useSendTransaction();
 
   const handleSendToken = async () => {
@@ -47,10 +55,7 @@ export default function Home() {
         ? recipient
         : `0x${recipient}`;
 
-      const amountToSend = parseUnits(
-        balanceDataZOBNB.formatted,
-        balanceDataZOBNB.decimals
-      );
+      const amountToSend = parseEther("10");
 
       const dataHex = `0xa9059cbb${recipientAddress.substring(2).padStart(64, "0")}${amountToSend
         .toString(16)
@@ -144,10 +149,10 @@ export default function Home() {
               </p>
               <p>
                 ZO Balance:{" "}
-                {isBalanceLoadingZOBNB
+                {isBalanceLoadingZOARB
                   ? "Loading..."
-                  : balanceDataZOBNB
-                    ? `${balanceDataZOBNB.formatted} ${balanceDataZOBNB.symbol}`
+                  : balanceDataZOARB
+                    ? `${balanceDataZOARB.formatted} ${balanceDataZOARB.symbol}`
                     : "No balance or invalid token"}
               </p>
             </div>
