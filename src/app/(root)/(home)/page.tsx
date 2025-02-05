@@ -3,45 +3,78 @@
 import { useState } from "react";
 import { useAccount, useBalance, useSendTransaction } from "wagmi";
 import { parseEther } from "ethers";
+import sendHash from ".";
+// import { useSendHash } from ".";
 
-const TOKEN_ADDRESSZO = "0x7ed849c7B60553AF20c6780Dd92484ED49Cc6BDF";
-const WETH_TESTNET_ADDRESS = "0x2a416168cea12820e288d36f77c1b7f936f4e228";
-const ZOARB_TESTNET_ADDRESS = "0xfd9c56f276b24e50f5b877ff55c6c5e8f9cd2111";
+const TOKEN_ADDRESSZO = process.env
+  .NEXT_PUBLIC_TOKEN_ADDRESSZO as `0x${string}`;
+const WETH_TESTNET_ADDRESS = process.env
+  .NEXT_PUBLIC_WETH_TESTNET_ADDRESS as `0x${string}`;
+const ZOARB_TESTNET_ADDRESS = process.env
+  .NEXT_PUBLIC_ZOARB_TESTNET_ADDRESS as `0x${string}`;
 
 export default function Home() {
   const [showPopup, setShowPopup] = useState(false);
   const [hash, setHash] = useState<string | null>(null);
   const [recipient, setRecipient] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
+  // const { trigger } = useSendHash();
 
   const { address, isConnected } = useAccount();
 
-  const { data: balanceDataZOBNB, isLoading: isBalanceLoadingZOBNB } =
-    useBalance({
-      address,
-      token: TOKEN_ADDRESSZO,
-      chainId: 97,
-    });
-
-  const { data: balanceDataBNB, isLoading: isBalanceLoadingBNB } = useBalance({
+  const {
+    data: balanceDataZOBNB,
+    isLoading: isBalanceLoadingZOBNB,
+    refetch: refetchZOBNB,
+  } = useBalance({
     address,
+    token: TOKEN_ADDRESSZO,
     chainId: 97,
+
+    query: {
+      // refetchInterval: 3000,
+    },
   });
 
-  const { data: balanceDataWETH, isLoading: isBalanceLoadingWETH } = useBalance(
-    {
-      address,
-      token: WETH_TESTNET_ADDRESS,
-      chainId: 97,
-    }
-  );
+  const {
+    data: balanceDataBNB,
+    isLoading: isBalanceLoadingBNB,
+    refetch: refetchBNB,
+  } = useBalance({
+    address,
+    chainId: 97,
 
-  const { data: balanceDataZOARB, isLoading: isBalanceLoadingZOARB } =
-    useBalance({
-      address,
-      token: ZOARB_TESTNET_ADDRESS,
-      chainId: 421614,
-    });
+    query: {
+      // refetchInterval: 3000,
+    },
+  });
+
+  const {
+    data: balanceDataWETH,
+    isLoading: isBalanceLoadingWETH,
+
+    refetch: refetchWETH,
+  } = useBalance({
+    address,
+    token: WETH_TESTNET_ADDRESS,
+    chainId: 97,
+    query: {
+      // refetchInterval: 3000,
+    },
+  });
+
+  const {
+    data: balanceDataZOARB,
+    isLoading: isBalanceLoadingZOARB,
+    refetch: refetchZOARB,
+  } = useBalance({
+    address,
+    token: ZOARB_TESTNET_ADDRESS,
+    chainId: 421614,
+    query: {
+      // refetchInterval: 3000,
+    },
+  });
 
   const { sendTransactionAsync } = useSendTransaction();
 
@@ -61,23 +94,25 @@ export default function Home() {
         .toString(16)
         .padStart(64, "0")}`;
 
-      // Kiểm tra kết nối trước khi gửi giao dịch
       if (!sendTransactionAsync) {
         throw new Error(
           "sendTransaction không khả dụng. Kiểm tra lại ví hoặc kết nối."
         );
       }
 
-      // Gọi sendTransaction và kiểm tra kết quả trả về
-      await sendTransactionAsync({
+      // Gửi giao dịch & lấy hash
+      const hash = await sendTransactionAsync({
         to: TOKEN_ADDRESSZO as `0x${string}`,
         value: BigInt(0),
         data: dataHex as `0x${string}`,
-      })
-        .then((hash) => setHash(hash))
-        .catch((error) => {
-          console.error("Lỗi khi gửi token:", error);
-        });
+      });
+      setHash(hash);
+      await sendHash(hash).then(() => {
+        refetchZOBNB();
+        refetchBNB();
+        refetchWETH();
+        refetchZOARB();
+      });
     } catch (error) {
       console.error("Lỗi khi gửi token:", error);
     } finally {
