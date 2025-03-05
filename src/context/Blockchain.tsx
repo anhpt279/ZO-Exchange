@@ -17,7 +17,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { arbitrumSepolia, bsc, bscTestnet } from "wagmi/chains";
+import { arbitrumSepolia, bsc, bscTestnet, arbitrum } from "wagmi/chains";
 
 const connectors = connectorsForWallets(
   [
@@ -42,12 +42,13 @@ type Props = {
 
 const config = createConfig({
   connectors,
-  chains: [bsc, bscTestnet, arbitrumSepolia],
+  chains: [bsc, bscTestnet, arbitrumSepolia, arbitrum],
   ssr: true,
   transports: {
     [bsc.id]: http("https://bsc-dataseed.binance.org/"),
     [bscTestnet.id]: http("https://data-seed-prebsc-1-s3.binance.org:8545/"),
     [arbitrumSepolia.id]: http("https://sepolia-rollup.arbitrum.io/rpc"),
+    [arbitrum.id]: http("https://arb1.arbitrum.io/rpc"),
   },
 });
 
